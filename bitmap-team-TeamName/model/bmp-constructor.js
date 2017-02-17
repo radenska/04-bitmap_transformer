@@ -10,7 +10,7 @@ function makeBitMap(data) {
   exports.bmp = data;
   exports.bmObj = new BitMap(data);
   console.log(exports.bmObj);
-};
+}
 
 function BitMap(data) {
   this.type = data.toString('utf-8', 0, 2);
@@ -24,4 +24,4 @@ function BitMap(data) {
   this.verticRes = data.readInt32LE(42);
   // this.colorTableStart = data.readInt32LE(66);
   this.allColorTable = data.toString('hex', 66, 1090);
-};
+}
