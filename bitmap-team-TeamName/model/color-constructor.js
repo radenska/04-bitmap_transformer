@@ -14,10 +14,10 @@ exports.changeColor = function() { //just inverting colors right now
   //        2.turn hex string values to decimal
   //        4. subtract each RGB value from 255, leave 7th and 8th positions as is;
   //        5. turn back into hex
-  // newArray.forEach((val, i) => { //invert colors
-  //   newArray[i] = (255 - parseInt(val, 16)).toString(16);
-  //   if (newArray[i].length === 1) newArray[i] = '0' + newArray[i];
-  // });
+  newArray.forEach((val, i) => { //invert colors
+    newArray[i] = (255 - parseInt(val, 16)).toString(16);
+    if (newArray[i].length === 1) newArray[i] = '0' + newArray[i];
+  });
   // newArray.forEach((val, i) => { //grayscale colors
   //   newArray[i] = Math.ceil((parseInt(val, 16))*0.7);
   //   if (newArray[i] > 255) newArray[i] = 255;
