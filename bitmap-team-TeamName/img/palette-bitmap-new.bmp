@@ -1,0 +1,4 @@
+function (err, data) {
+    if (err) throw err;
+    console.log('your new file can be found here: ', `${__dirname}/../img/palette-bitmap-new.bmp`);
+  }
