@@ -12,7 +12,7 @@ exports.getBitMap = function(cb) {
 };
 
 exports.newBitMap = function(data) {
-  fs.writeFile(`${__dirname}/../img/palette-bitmap-new.bmp`, data, function(err, data) {
+  fs.writeFile(`${__dirname}/../img/palette-bitmap-new.bmp`, data, function(err) {
     if (err) throw err;
     console.log('your new file can be found here: ', `${__dirname}/../img/palette-bitmap-new.bmp`);
   });
