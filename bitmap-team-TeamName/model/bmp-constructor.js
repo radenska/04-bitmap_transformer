@@ -1,18 +1,16 @@
 'use strict';
 
-const fs = require('fs');
-const fileReadHelper = require(`${__dirname}/../lib/bmp-file-helper.js`);
 module.exports = exports = {};
+const colorCon = require(`${__dirname}/color-constructor.js`);
 
-fileReadHelper.getBitMap(makeBitMap);
 
-function makeBitMap(data) {
+exports.makeBitMap = function(data) {
   exports.bmp = data;
-  exports.bmObj = new BitMap(data);
-  console.log(exports.bmObj);
+  exports.bmObj = new exports.BitMap(data);
+  colorCon.changeColor();
 };
 
-function BitMap(data) {
+exports.BitMap = function(data) {
   this.type = data.toString('utf-8', 0, 2);
   this.totalFileSize = data.readInt32LE(2);
   this.arrayLoc = data.readInt32LE(10);
