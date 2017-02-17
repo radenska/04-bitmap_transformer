@@ -42,6 +42,7 @@ exports.changeColor = function() { //just inverting colors right now
   }
   //        8. place in correct location in bitmap buffer
   //        9. call write function, passing it the transformed buffer
+
   fileReadHelper.newBitMap(bmpCon.bmp);
 };
 
