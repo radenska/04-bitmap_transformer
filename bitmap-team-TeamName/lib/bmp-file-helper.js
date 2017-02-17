@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('fs');
-const bmpCon = require(`${__dirname}/../model/bmp-constructor.js`)
 module.exports = exports = {};
 
 exports.getBitMap = function(cb) {
