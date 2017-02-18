@@ -1,17 +1,17 @@
 'use strict';
 
-const colorCon = require(`${__dirname}/color-constructor.js`);
+// const colorCon = require(`${__dirname}/color-constructor.js`);
 const fileReadHelper = require(`${__dirname}/../lib/bmp-file-helper.js`);
 module.exports = exports = {};
 
 //create a place for our constructed bitmap object
-exports.bmObj = {};
+// exports.bmObj = {};
 
 //create an object for the transformed buffer to be stored as (on the module)
-exports.transformedBitMap = {};
+// exports.transformedBitMap = {};
 
 //create an array for each transformation to store the updated buffer string
-exports.bmObj.transformedArray = [];
+// exports.bmObj.transformedArray = [];
 
 //Here is the the pseudo-code below that brian wrote for me. He suggested we look at exposing only BitMap constructor to the module from this file.
 
@@ -32,18 +32,19 @@ exports.bmObj.transformedArray = [];
 // var bitmap = new BM();
 //
 // bitmap.makeBitmap();
+var bmObj = {};
 
 exports.makeBitMap = function(data) {
-  exports.bmp = data;
-  exports.bmObj = new exports.BitMap(data);
-  prepareArray(exports.bmObj);
-  colorCon.greyscale(exports.bmObj.preparedArray);
-  packageArray(exports.bmObj.transformedArray);
-  fileReadHelper.newBitMap(exports.transformedBitMap);
-  // colorCon.changeColor();
+  bmObj = new BitMap(data);
+  bmObj.prepareArray();
+  if (process.argv[3].toLowerCase() === 'blue') bmObj.blue();
+  if (process.argv[3].toLowerCase() === 'invert') bmObj.invert();
+  if (process.argv[3].toLowerCase() === 'grayscale' || process.argv[3].toLowerCase() === 'greyscale') bmObj.greyscale();
+  bmObj.packageArray();
+  fileReadHelper.newBitMap(bmObj.buffer);
 };
 
-function BitMap = function(data) {
+function BitMap(data) {
   this.type = data.toString('utf-8', 0, 2);
   this.totalFileSize = data.readInt32LE(2);
   this.arrayLoc = data.readInt32LE(10);
@@ -53,25 +54,54 @@ function BitMap = function(data) {
   this.bitsPerPixel = data.readInt32LE(28);
   this.horizRes = data.readInt32LE(38);
   this.verticRes = data.readInt32LE(42);
-  this.colorTable = data.toString('hex', 66, 1090);
+  this.singlesArray = data.toString('hex', 66, 1090).split('');
+  this.buffer = data;
+  this.preparedArray = [];
+  this.packagedArray = [];
+  this.transformedArray = [];
+}
+
+BitMap.prototype.prepareArray = function() {
+  for (let i = 0; i <= this.singlesArray.length - 2; i += 2) {
+    this.preparedArray.push(this.singlesArray[i] + this.singlesArray[i+1]);
+  }
 };
 
-function prepareArray(bmObj) {
-  var colorTableArray = bmObj.colorTable.split(''); //split to modify string of hex chars
-  exports.bmObj.preparedArray = [];
-  for (let i = 0; i <= colorTableArray.length - 2; i += 2) {
-    exports.bmObj.preparedArray.push(colorTableArray[i] + colorTableArray[i+1]);
-  }
-}
-
-function packageArray(transformedArray) {
-  var packagedArray = [];
-  for (let i = 0; i <= transformedArray.length - 4; i += 4) {
-    packagedArray.push(transformedArray[i] + transformedArray[i+1] + transformedArray[i+2]);
+BitMap.prototype.packageArray = function() {
+  for (let i = 0; i <= this.transformedArray.length - 4; i += 4) {
+    this.packagedArray.push(this.transformedArray[i] + this.transformedArray[i+1] + this.transformedArray[i+2]);
   }
   var offset = 66;
-  for (let i = 0; i < packagedArray.length; i++) {
-    exports.transformedBitMap.write(packagedArray[i], offset, 'hex');
+  for (let i = 0; i < this.packagedArray.length; i++) {
+    this.buffer.write(this.packagedArray[i], offset, 'hex');
     offset += 4;
   }
-}
+};
+
+BitMap.prototype.invert = function(){
+  this.preparedArray.forEach((val, i) => { //invert colors
+    this.preparedArray[i] = (255 - parseInt(val, 16)).toString(16);
+    if (this.preparedArray[i].length === 1) this.preparedArray[i] = '0' + this.preparedArray[i];
+  });
+  this.transformedArray = this.preparedArray;
+};
+
+BitMap.prototype.greyscale = function() {
+  this.preparedArray.forEach((val, i) => { //grayscale colors
+    this.preparedArray[i] = Math.ceil((parseInt(val, 16))*0.7);
+    if (this.preparedArray[i] > 255) this.preparedArray[i] = 255;
+    this.preparedArray[i] = this.preparedArray[i].toString(16);
+    if (this.preparedArray[i].length === 1) this.preparedArray[i] = '0' + this.preparedArray[i];
+  });
+  this.transformedArray = this.preparedArray;
+};
+
+BitMap.prototype.blue = function() {
+  for (let i = 2; i <= this.preparedArray.length - 4; i += 4) { //change blue values
+    this.preparedArray[i] = Math.floor((parseInt(this.preparedArray[i], 16))*1.7);
+    if (this.preparedArray[i] > 255) this.preparedArray[i] = 255;
+    this.preparedArray[i] = this.preparedArray[i].toString(16);
+    if (this.preparedArray[i].length === 1) this.preparedArray[i] = '0' + this.preparedArray[i];
+  }
+  this.transformedArray = this.preparedArray;
+};
