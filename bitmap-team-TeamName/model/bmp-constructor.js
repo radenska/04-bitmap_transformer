@@ -88,7 +88,7 @@ BitMap.prototype.invert = function(){
 
 BitMap.prototype.greyscale = function() {
   this.preparedArray.forEach((val, i) => { //grayscale colors
-    this.preparedArray[i] = Math.ceil((parseInt(val, 16))*0.7);
+    this.preparedArray[i] = Math.ceil((parseInt(val, 16))*3);
     if (this.preparedArray[i] > 255) this.preparedArray[i] = 255;
     this.preparedArray[i] = this.preparedArray[i].toString(16);
     if (this.preparedArray[i].length === 1) this.preparedArray[i] = '0' + this.preparedArray[i];
