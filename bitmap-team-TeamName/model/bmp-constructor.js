@@ -23,32 +23,32 @@ function BitMap(data) {
   this.bitsPerPixel = data.readInt32LE(28);
   this.horizRes = data.readInt32LE(38);
   this.verticRes = data.readInt32LE(42);
-  this.singlesArray = data.toString('hex', 66, 1090).split('');
+  this.singles = data.toString('hex', 66, 1090).split('');
   this.buffer = data;
-  this.preparedArray = [];
-  this.packagedArray = [];
-  this.transformedArray = [];
+  this.pairs = [];
+  this.packaged = [];
+  this.transformed = [];
 }
 
 BitMap.prototype.prepareArray = function() {
-  for (let i = 0; i <= this.singlesArray.length - 2; i += 2) {
-    this.preparedArray.push(this.singlesArray[i] + this.singlesArray[i+1]);
+  for (let i = 0; i <= this.singles.length - 2; i += 2) {
+    this.pairs.push(this.singles[i] + this.singles[i+1]);
   }
 };
 
 BitMap.prototype.packageArray = function() {
-  for (let i = 0; i <= this.transformedArray.length - 4; i += 4) {
-    this.packagedArray.push(this.transformedArray[i] + this.transformedArray[i+1] + this.transformedArray[i+2]);
+  for (let i = 0; i <= this.transformed.length - 4; i += 4) {
+    this.packaged.push(this.transformed[i] + this.transformed[i+1] + this.transformed[i+2]);
   }
   var offset = 66;
-  for (let i = 0; i < this.packagedArray.length; i++) {
-    this.buffer.write(this.packagedArray[i], offset, 'hex');
+  for (let i = 0; i < this.packaged.length; i++) {
+    this.buffer.write(this.packaged[i], offset, 'hex');
     offset += 4;
   }
 };
 
 BitMap.prototype.invert = function(){
-  this.transformedArray = this.preparedArray.map(val => { //invert colors
+  this.transformed = this.pairs.map(val => { //invert colors
     val = (255 - parseInt(val, 16)).toString(16);
     if (val.length === 1) val = '0' + val;
     return val;
@@ -57,12 +57,12 @@ BitMap.prototype.invert = function(){
 
 BitMap.prototype.greyscale = function() {
   //a grayscale formula: 0.2989*red + 0.5870*green + 0.1140*blue, then each value (R, G, and B) is assigned the weighted average
-  var grayArray = this.preparedArray.map(val => parseInt(val, 16));
+  var grayArray = this.pairs.map(val => parseInt(val, 16));
   for (let i = 0; i < grayArray.length - 4; i += 4) {
     let sumRGB = Math.floor(grayArray[i]*0.114 + grayArray[i+1]*0.587 + grayArray[i+2]*0.2989); //calculate weighted average
     grayArray[i] = grayArray[i+1] = grayArray[i+2] = sumRGB; //each value equals the sum
   }
-  this.transformedArray = grayArray.map(val => { //turn into string and assign to transformedArray
+  this.transformed = grayArray.map(val => { //turn into string and assign to transformed
     val = val.toString(16);
     if (val.length === 1) val = '0' + val;
     return val;
@@ -70,19 +70,19 @@ BitMap.prototype.greyscale = function() {
 };
 
 BitMap.prototype.colorify = function(colorIndex, i2, i3) {
-  this.iterateOverArray(colorIndex, 0.7);
-  this.iterateOverArray(i2, 0); //set non chosen values to 0
-  this.iterateOverArray(i3, 0);
-  this.transformedArray = this.preparedArray;
+  this.transformColor(colorIndex, 0.7);
+  this.transformColor(i2, 0); //set non chosen values to 0
+  this.transformColor(i3, 0);
+  this.transformed = this.pairs;
 };
 
-BitMap.prototype.iterateOverArray = function(start, colorVal) {
+BitMap.prototype.transformColor = function(start, colorVal) {
   // position 0: blue 1: green 2: red 3: padding
-  for (let i = start; i <= this.preparedArray.length - 4; i += 4) { //change blue values
-    this.preparedArray[i] = Math.floor((parseInt(this.preparedArray[i], 16))*colorVal);
-    if (this.preparedArray[i] > 255) this.preparedArray[i] = 255;
-    this.preparedArray[i] = this.preparedArray[i].toString(16);
-    if (this.preparedArray[i].length === 1) this.preparedArray[i] = '0' + this.preparedArray[i];
+  for (let i = start; i <= this.pairs.length - 4; i += 4) { //change blue values
+    this.pairs[i] = Math.floor((parseInt(this.pairs[i], 16))*colorVal);
+    if (this.pairs[i] > 255) this.pairs[i] = 255;
+    this.pairs[i] = this.pairs[i].toString(16);
+    if (this.pairs[i].length === 1) this.pairs[i] = '0' + this.pairs[i];
   }
 };
 
