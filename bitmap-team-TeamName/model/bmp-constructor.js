@@ -1,45 +1,14 @@
 'use strict';
 
-// const colorCon = require(`${__dirname}/color-constructor.js`);
 const fileReadHelper = require(`${__dirname}/../lib/bmp-file-helper.js`);
 module.exports = exports = {};
 
-//create a place for our constructed bitmap object
-// exports.bmObj = {};
-
-//create an object for the transformed buffer to be stored as (on the module)
-// exports.transformedBitMap = {};
-
-//create an array for each transformation to store the updated buffer string
-// exports.bmObj.transformedArray = [];
-
-//Here is the the pseudo-code below that brian wrote for me. He suggested we look at exposing only BitMap constructor to the module from this file.
-
-// function BitmapConstructor(bm) {
-//   // house bitmap data
-// }
-//
-// BitmapConstructor.prototype.makeBitmap = function() {
-//   // logic here
-//   return this;
-// }
-//
-// var Bitmap = module.exports = BitmapConstuctor;
-//
-// // new file
-// var BM = require('./lib/bm-constructor');
-//
-// var bitmap = new BM();
-//
-// bitmap.makeBitmap();
 var bmObj = {};
 
 exports.makeBitMap = function(data) {
   bmObj = new BitMap(data);
   bmObj.prepareArray();
-  if (process.argv[3].toLowerCase() === 'blue') bmObj.blue();
-  if (process.argv[3].toLowerCase() === 'invert') bmObj.invert();
-  if (process.argv[3].toLowerCase() === 'grayscale' || process.argv[3].toLowerCase() === 'greyscale') bmObj.greyscale();
+  selectTransformation();
   bmObj.packageArray();
   fileReadHelper.newBitMap(bmObj.buffer);
 };
@@ -79,29 +48,58 @@ BitMap.prototype.packageArray = function() {
 };
 
 BitMap.prototype.invert = function(){
-  this.preparedArray.forEach((val, i) => { //invert colors
-    this.preparedArray[i] = (255 - parseInt(val, 16)).toString(16);
-    if (this.preparedArray[i].length === 1) this.preparedArray[i] = '0' + this.preparedArray[i];
+  this.transformedArray = this.preparedArray.map(val => { //invert colors
+    val = (255 - parseInt(val, 16)).toString(16);
+    if (val.length === 1) val = '0' + val;
+    return val;
   });
-  this.transformedArray = this.preparedArray;
 };
 
 BitMap.prototype.greyscale = function() {
-  this.preparedArray.forEach((val, i) => { //grayscale colors
-    this.preparedArray[i] = Math.ceil((parseInt(val, 16))*3);
-    if (this.preparedArray[i] > 255) this.preparedArray[i] = 255;
-    this.preparedArray[i] = this.preparedArray[i].toString(16);
-    if (this.preparedArray[i].length === 1) this.preparedArray[i] = '0' + this.preparedArray[i];
+  //a grayscale formula: 0.2989*red + 0.5870*green + 0.1140*blue, then each value (R, G, and B) is assigned the weighted average
+  var grayArray = this.preparedArray.map(val => parseInt(val, 16));
+  for (let i = 0; i < grayArray.length - 4; i += 4) {
+    let sumRGB = Math.floor(grayArray[i]*0.114 + grayArray[i+1]*0.587 + grayArray[i+2]*0.2989); //calculate weighted average
+    grayArray[i] = grayArray[i+1] = grayArray[i+2] = sumRGB; //each value equals the sum
+  }
+  this.transformedArray = grayArray.map(val => { //turn into string and assign to transformedArray
+    val = val.toString(16);
+    if (val.length === 1) val = '0' + val;
+    return val;
   });
+};
+
+BitMap.prototype.colorify = function(colorIndex, i2, i3) {
+  this.iterateOverArray(colorIndex, 1.5);
+  this.iterateOverArray(i2, 0); //set non chosen values to 0
+  this.iterateOverArray(i3, 0);
   this.transformedArray = this.preparedArray;
 };
 
-BitMap.prototype.blue = function() {
-  for (let i = 2; i <= this.preparedArray.length - 4; i += 4) { //change blue values
-    this.preparedArray[i] = Math.floor((parseInt(this.preparedArray[i], 16))*1.7);
+BitMap.prototype.iterateOverArray = function(start, colorVal) {
+  // position 0: blue 1: green 2: red 3: padding
+  for (let i = start; i <= this.preparedArray.length - 4; i += 4) { //change blue values
+    this.preparedArray[i] = Math.floor((parseInt(this.preparedArray[i], 16))*colorVal);
     if (this.preparedArray[i] > 255) this.preparedArray[i] = 255;
     this.preparedArray[i] = this.preparedArray[i].toString(16);
     if (this.preparedArray[i].length === 1) this.preparedArray[i] = '0' + this.preparedArray[i];
   }
-  this.transformedArray = this.preparedArray;
 };
+
+function selectTransformation() {
+  let userChoice = process.argv[3].toLowerCase();
+  if (userChoice === 'blue') bmObj.colorify(0, 1, 2);
+  if (userChoice === 'red') bmObj.colorify(2, 0, 1);
+  if (userChoice === 'green') bmObj.colorify(1, 0, 2);
+  if (userChoice === 'invert') bmObj.invert();
+  if (userChoice === 'purple') {
+    bmObj.colorify(0, 1, 1);
+    bmObj.colorify(2, 1, 1);
+  }
+  if (userChoice === 'yellow') {
+    bmObj.colorify(1, 0, 0);
+    bmObj.colorify(2, 0, 0);
+  }
+  if (userChoice === 'grayscale' || userChoice === 'greyscale') bmObj.greyscale();
+  if (userChoice === 'intensify') bmObj.intensify();
+}
