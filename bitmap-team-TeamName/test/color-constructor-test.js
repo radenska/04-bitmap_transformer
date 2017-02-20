@@ -104,7 +104,7 @@ describe('Constructor Module - Color Transformations', function() {
         done();
       });
     });
-    before((done) =>{
+    before((done) => {
       fs.readFile(`${__dirname}/butterfly-purple-test.txt`, 'hex', function(err, data) {
         if (err) throw err;
         testObj.purpleControl = data;
@@ -126,7 +126,7 @@ describe('Constructor Module - Color Transformations', function() {
         done();
       });
     });
-    before((done) =>{
+    before((done) => {
       fs.readFile(`${__dirname}/butterfly-invert-test.txt`, 'hex', function(err, data) {
         if (err) throw err;
         testObj.invertControl = data;
