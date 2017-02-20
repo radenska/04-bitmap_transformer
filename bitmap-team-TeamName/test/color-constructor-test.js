@@ -5,8 +5,6 @@ const fs = require('fs');
 
 var testObj = {};
 
-// console.log(greyscaleTest);
-
 describe('Constructor Module - Color Transformations', function() {
   describe('Transformed file buffer should match test control - Grey Scale', function() {
     before((done) => {

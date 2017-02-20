@@ -17,17 +17,17 @@ exports.newBitMap = function(data) {
   fs.writeFile(filepathNewfile, data, function(err) {
     if (err) throw err;
     console.log('your new file can be found here: ', filepathNewfile);
-    makeTestData(testFilePath, data);
+    // makeTestData(testFilePath, data);
   });
 };
 
 
 //::this will write a buffer as a string to a new file for testing purposes::
 
-var makeTestData = function(testFilePath, data) {
-  var buffer = Buffer.from(data);
-  var testData = buffer.toString('hex');
-  fs.writeFile(testFilePath, testData, function() {
-    console.log('Done writing test file!');
-  });
-};
+// var makeTestData = function(testFilePath, data) {
+//   var buffer = Buffer.from(data);
+//   var testData = buffer.toString('hex');
+//   fs.writeFile(testFilePath, testData, function() {
+//     console.log('Done writing test file!');
+//   });
+// };
