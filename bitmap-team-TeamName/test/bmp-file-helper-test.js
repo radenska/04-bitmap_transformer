@@ -2,11 +2,7 @@
 
 const expect = require('chai').expect;
 const fs = require('fs');
-// const fileReadHelper = require(`${__dirname}/../lib/bmp-file-helper.js`);
-
-// var testFunc = function(data) {
-//   console.log(data);
-// };
+const fileReadHelper = require(`${__dirname}/../lib/bmp-file-helper.js`);
 
 describe('bmp-file-helper Module', function() {
   describe('Expecting readFile to output a buffer.', function() {
@@ -17,7 +13,5 @@ describe('bmp-file-helper Module', function() {
         done();
       });
     });
-  });
-  describe('Expecting readBitMap to handle asynch callback correctly', function() {
   });
 });
