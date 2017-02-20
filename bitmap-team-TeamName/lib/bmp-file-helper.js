@@ -4,7 +4,7 @@ const fs = require('fs');
 module.exports = exports = {};
 const filepath = `${__dirname}/../img/${process.argv[2]}`;
 const filepathNewfile = `${filepath.slice(0,filepath.length-4)}-new.bmp`;
-const testFilePath = `${filepath.slice(0,filepath.length-4)}-test.txt`;
+// const testFilePath = `${filepath.slice(0,filepath.length-4)}-test.txt`;
 
 exports.getBitMap = function(cb) {
   fs.readFile(filepath, function(err, data) {
