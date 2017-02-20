@@ -2,6 +2,7 @@
 
 const hopeToGod = require('chai').expect;
 const fs = require('fs');
+const bmp = require(`${__dirname}/../model/bmp-constructor.js`);
 
 describe('bmp-constructor Module', function() {
   describe('Expecting readFile to output buffered data.', function() {
@@ -15,14 +16,14 @@ describe('bmp-constructor Module', function() {
 });
 describe('Expecting asynch callback to hollerback correctly', function() {
 });
-describe('bmp-constructor Module', function() {
-  describe('Expecting to confirm object has property of colorPanes.', function(){
-    it('should confirm the property\'s presense', function(done){
-    hopeToGod(BitMap).to.have.property('numColorPanes');
-  });
-  it ('should return the property of bitmap', function)
 });
-
-});
-
-});
+// describe('bmp-constructor Module', function() {
+//   describe('Expecting to confirm object has property of colorPanes.', function(){
+//     it('should confirm the property is here', function(done){
+//     var bmObj = {};
+//     hopeToGod(bmp.makeBitMap()).is.a('function');
+//     done();
+//     });
+//     });
+//   });
+//   });
