@@ -16,14 +16,13 @@ describe('bmp-constructor Module', function() {
 });
 describe('Expecting asynch callback to hollerback correctly', function() {
 });
+describe('bmp-constructor Module', function() {
+  describe('Expecting to confirm object has property of colorPanes.', function(){
+    it('should confirm the property\'s presense', function(done){
+    var bmObj = {};
+    hopeToGod(bmp.makeBitMap).is.a('function');
+    done();
+  });
 });
-// describe('bmp-constructor Module', function() {
-//   describe('Expecting to confirm object has property of colorPanes.', function(){
-//     it('should confirm the property is here', function(done){
-//     var bmObj = {};
-//     hopeToGod(bmp.makeBitMap()).is.a('function');
-//     done();
-//     });
-//     });
-//   });
-//   });
+});
+});
