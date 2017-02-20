@@ -12,5 +12,11 @@ describe('bmp-file-helper Module', function() {
         done();
       });
     });
+    it('should throw error', function(done) {
+      fs.readFile(`${__dirname}/../img/not-palette-bitmap.bmp`, function(err) {
+        expect(err).to.be.an('error');
+        done();
+      });
+    });
   });
 });
